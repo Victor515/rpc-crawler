@@ -4,12 +4,14 @@ import (
 	"crawler/engine"
 	"crawler/scheduler"
 	"crawler/zhenai/parser"
-	"crawler_distributed/persist/client"
+	"rpc-crawler/persist/client"
+	"fmt"
+	"rpc-crawler/config"
 )
 
 func main() {
 	// use distributed itemsaver
-	itemChan, err := client.ItemSaver(":1234")
+	itemChan, err := client.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort))
 	if err != nil{
 		panic(err)
 	}

@@ -2,10 +2,11 @@ package main
 
 import (
 	"testing"
-	"crawler_distributed/rpcsupport"
+	"rpc-crawler/rpcsupport"
 	"crawler/engine"
 	"crawler/model"
 	"time"
+	"rpc-crawler/config"
 )
 
 func TestItemSaver(t *testing.T){
@@ -45,7 +46,7 @@ func TestItemSaver(t *testing.T){
 	}
 
 	result := ""
-	err = client.Call("ItemSaverService.Save", expected, &result)
+	err = client.Call(config.ItemSaverRpc, expected, &result)
 
 	if err != nil || result != "ok"{
 		t.Errorf("Result: %s; Error: %v", result, err)
