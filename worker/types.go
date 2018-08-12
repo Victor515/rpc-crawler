@@ -98,9 +98,3 @@ func deserializeParser(p SerializedParser) (engine.Parser, error){
 		return nil, errors.New("Cannot deserialize parser: " + p.Name)
 	}
 }
-
-type CrawlerService struct {}
-
-func (CrawlerService) Process(request Request, result *ParserResult) error{
-
-}

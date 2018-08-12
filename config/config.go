@@ -3,6 +3,7 @@ package config
 const(
 	// Service ports
 	ItemSaverPort = 1234
+	WorkerPort0 = 9000
 
 	// elasticsearch
 	ElasticIndex = "dating_profile"
@@ -10,6 +11,7 @@ const(
 
 	// RPC endpoints
 	ItemSaverRpc = "ItemSaverService.Save"
+	CrawlerServiceRpc = "CrawlerService.Process"
 
 	// Local server ip address
 	ServerIpDefault = "127.0.0.1" // localhost
