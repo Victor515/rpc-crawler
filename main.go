@@ -4,23 +4,31 @@ import (
 	"crawler/engine"
 	"crawler/scheduler"
 	"crawler/zhenai/parser"
-	"rpc-crawler/persist/client"
+	itemsaver "rpc-crawler/persist/client"
 	"fmt"
 	"rpc-crawler/config"
 	crawler_config "crawler/config"
+	worker "rpc-crawler/worker/client"
 )
 
 func main() {
 	// use distributed itemsaver
-	itemChan, err := client.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort))
+	itemChan, err := itemsaver.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort))
 	if err != nil{
 		panic(err)
 	}
+
+	processor, err := worker.CreateProcessor()
+	if err != nil{
+		panic(err)
+	}
+
 
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueueScheduler{},
 		WorkerCount: 100,
 		ItemChan:    itemChan,
+		RequestProcessor: processor,
 	}
 	//e := engine.SimpleEngine{}
 

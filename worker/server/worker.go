@@ -9,6 +9,6 @@ import (
 )
 
 func main() {
-	log.Fatal(rpcsupport.ServeRpc(fmt.Sprintf("%d",
+	log.Fatal(rpcsupport.ServeRpc(fmt.Sprintf(":%d",
 		config.WorkerPort0), worker.CrawlerService{}))
 }
