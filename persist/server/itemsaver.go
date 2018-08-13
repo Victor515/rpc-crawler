@@ -7,10 +7,18 @@ import (
 	"log"
 	"rpc-crawler/config"
 	"fmt"
+	"flag"
 )
 
+var port = flag.Int("port", 0, "the port to listen on")
+
 func main() {
-	log.Fatal(ServeRpc(config.ElasticIndex, fmt.Sprintf(":%d", config.ItemSaverPort)))
+	flag.Parse()
+	if *port == 0{
+		fmt.Println("Must specify a port")
+		return
+	}
+	log.Fatal(ServeRpc(config.ElasticIndex, fmt.Sprintf(":%d", *port)))
 }
 
 func ServeRpc(index, host string) error{

@@ -2,28 +2,24 @@ package client
 
 import (
 	"crawler/engine"
-	"rpc-crawler/rpcsupport"
-	"fmt"
 	"rpc-crawler/config"
 	"rpc-crawler/worker"
+	"net/rpc"
 )
 
-func CreateProcessor() (engine.Processor, error){
-	client, err := rpcsupport.NewClient(fmt.Sprintf(":%d", config.WorkerPort0))
-	if err != nil{
-		return nil, err
-	}
+func CreateProcessor(clientChan chan *rpc.Client) (engine.Processor){
 	return func(request engine.Request) (engine.ParserResult, error) {
 		// serialize request
 		sReq := worker.SerializeRequest(request)
 		var sRes worker.ParserResult
 
+		c := <-clientChan
 		// call rpc
-		err := client.Call(config.CrawlerServiceRpc, sReq, &sRes)
+		err := c.Call(config.CrawlerServiceRpc, sReq, &sRes)
 		if err != nil{
 			return engine.ParserResult{}, err
 		}
 		// return deserialized result
 		return worker.DeserializeResult(sRes), nil
-	}, nil
+	}
 }

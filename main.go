@@ -6,22 +6,32 @@ import (
 	"crawler/zhenai/parser"
 	itemsaver "rpc-crawler/persist/client"
 	"fmt"
-	"rpc-crawler/config"
 	crawler_config "crawler/config"
 	worker "rpc-crawler/worker/client"
+	"net/rpc"
+	"rpc-crawler/rpcsupport"
+	"log"
+	"flag"
+	"strings"
+)
+
+var(
+	itemSaverHost = flag.String("itemsaver_hosts", "", "itemsaver host")
+	workerHosts = flag.String("worker_hosts", "", "worker hosts(comma separated)")
 )
 
 func main() {
+	flag.Parse()
 	// use distributed itemsaver
-	itemChan, err := itemsaver.ItemSaver(fmt.Sprintf(":%d", config.ItemSaverPort))
+	itemChan, err := itemsaver.ItemSaver(fmt.Sprintf(":%d", *itemSaverHost))
 	if err != nil{
 		panic(err)
 	}
 
-	processor, err := worker.CreateProcessor()
-	if err != nil{
-		panic(err)
-	}
+	pool := createClientPool(strings.Split(*workerHosts, ","))
+
+	processor := worker.CreateProcessor(pool)
+
 
 
 	e := engine.ConcurrentEngine{
@@ -42,4 +52,27 @@ func main() {
 	//	ParserFunc:parser.ParseCity,
 	//})
 
+}
+
+func createClientPool(hosts []string) chan *rpc.Client{
+	var clients []*rpc.Client
+	for _,h := range hosts{
+		client, err := rpcsupport.NewClient(h)
+		if err == nil{
+			clients = append(clients, client)
+			log.Printf("Connected to %s", h)
+		}else{
+			log.Printf("Error connected to %s: %v", h, err)
+		}
+	}
+
+	out := make(chan *rpc.Client)
+	go func() {
+		for{
+			for _, client := range  clients{
+				out <- client
+			}
+		}
+	}()
+	return out
 }
