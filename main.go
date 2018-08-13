@@ -7,6 +7,7 @@ import (
 	"rpc-crawler/persist/client"
 	"fmt"
 	"rpc-crawler/config"
+	crawler_config "crawler/config"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 
 	e.Run(engine.Request{
 		Url:        "http://www.zhenai.com/zhenghun",
-		ParserFunc: parser.ParseCityList,
+		Parser: engine.NewFuncParser(parser.ParseCityList, crawler_config.ParseCityList),
 	})
 
 	//e.Run(engine.Request{
