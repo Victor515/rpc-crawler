@@ -23,7 +23,7 @@ var(
 func main() {
 	flag.Parse()
 	// use distributed itemsaver
-	itemChan, err := itemsaver.ItemSaver(fmt.Sprintf(":%d", *itemSaverHost))
+	itemChan, err := itemsaver.ItemSaver(fmt.Sprintf("%s", *itemSaverHost))
 	if err != nil{
 		panic(err)
 	}
